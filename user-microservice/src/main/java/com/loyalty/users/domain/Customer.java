@@ -1,11 +1,9 @@
 package com.loyalty.users.domain;
 
+import com.loyalty.users.domain.enums.SchemeStatus;
 import io.micronaut.serde.annotation.Serdeable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 
 @Entity
@@ -17,6 +15,8 @@ public class Customer {
     private long id;
     @Column(nullable = false)
     private String name;
+    @Enumerated(EnumType.STRING)
+    private SchemeStatus schemeStatus;
 
     public long getId() {
         return id;
@@ -33,4 +33,13 @@ public class Customer {
     public void setName(String name) {
         this.name = name;
     }
+
+    public SchemeStatus getSchemeStatus() {
+        return schemeStatus;
+    }
+
+    public void setSchemeStatus(SchemeStatus schemeStatus) {
+        this.schemeStatus = schemeStatus;
+    }
+
 }

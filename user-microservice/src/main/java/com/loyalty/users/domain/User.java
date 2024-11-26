@@ -1,5 +1,6 @@
 package com.loyalty.users.domain;
 
+import com.loyalty.users.domain.enums.Gender;
 import io.micronaut.serde.annotation.Serdeable;
 
 import javax.persistence.*;
@@ -20,6 +21,8 @@ public class User {
     private String email;
     @Column(nullable = false)
     private LocalDate dateOfBirth;
+    @Column(nullable = false)
+    private String mobileNumber;
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -61,6 +64,14 @@ public class User {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
     public Gender getGender() {

@@ -28,6 +28,7 @@ public class UsersController {
         user.setLastName(details.getLastName());
         user.setEmail(details.getEmail());
         user.setDateOfBirth(details.getDateOfBirth());
+        user.setMobileNumber(details.getMobileNumber());
         user.setGender(details.getGender());
         usersRepo.save(user);
         return HttpResponse.created(user);
@@ -79,6 +80,4 @@ public class UsersController {
         usersRepo.delete(oUser.get());
         return HttpResponse.ok();
     }
-
-
 }

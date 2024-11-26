@@ -1,6 +1,6 @@
 package com.loyalty.users.dto;
 
-import com.loyalty.users.domain.Gender;
+import com.loyalty.users.domain.enums.Gender;
 import io.micronaut.serde.annotation.Serdeable;
 
 import java.time.LocalDate;
@@ -12,6 +12,7 @@ public class UserDTO {
     private String lastName;
     private String email;
     private LocalDate dateOfBirth;
+    private String mobileNumber;
     private Gender gender;
 
     public String getFirstName() {
@@ -44,6 +45,14 @@ public class UserDTO {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
     public Gender getGender() {
