@@ -23,4 +23,5 @@ netty:
     allocator:
       max-order: 3
 kafka:
-  enabled: false
+  bootstrap:
+    servers: ${KAFKA_BOOTSTRAP_SERVERS:`localhost:9094`}

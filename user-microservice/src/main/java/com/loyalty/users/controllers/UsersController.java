@@ -2,6 +2,7 @@ package com.loyalty.users.controllers;
 
 import com.loyalty.users.domain.User;
 import com.loyalty.users.dto.UserDTO;
+import com.loyalty.users.kafka.UsersProducer;
 import com.loyalty.users.repositories.UsersRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
@@ -15,6 +16,9 @@ public class UsersController {
 
     @Inject
     private UsersRepository usersRepo;
+
+    @Inject
+    private UsersProducer usersProducer;
 
     @Get
     public Iterable<User> getUsers() {
@@ -31,6 +35,7 @@ public class UsersController {
         user.setMobileNumber(details.getMobileNumber());
         user.setGender(details.getGender());
         usersRepo.save(user);
+        usersProducer.createUser(user.getId(), details);
         return HttpResponse.created(user);
     }
 
@@ -78,6 +83,7 @@ public class UsersController {
             return HttpResponse.notFound("User not found");
         }
         usersRepo.delete(oUser.get());
+        usersProducer.deleteUser(id, null);
         return HttpResponse.ok();
     }
 }
