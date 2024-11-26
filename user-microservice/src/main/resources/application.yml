@@ -3,11 +3,17 @@ micronaut:
     name: userMicroservice
 datasources:
   default:
+    url: jdbc:mariadb://localhost:3306/users
+    username: user
+    password: usersecret
     driver-class-name: org.mariadb.jdbc.Driver
     db-type: mariadb
     dialect: MYSQL
 jpa:
   default:
+    entity-scan:
+      packages:
+        - com.loyalty.users.domain
     properties:
       hibernate:
         hbm2ddl:
@@ -16,3 +22,5 @@ netty:
   default:
     allocator:
       max-order: 3
+kafka:
+  enabled: false
