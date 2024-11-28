@@ -68,6 +68,9 @@ public class UsersController {
         if (details.getDateOfBirth() != null){
             user.setDateOfBirth(details.getDateOfBirth());
         }
+        if (details.getMobileNumber() != null){
+            user.setMobileNumber(details.getMobileNumber());
+        }
         if (details.getGender() != null){
             user.setGender(details.getGender());
         }
