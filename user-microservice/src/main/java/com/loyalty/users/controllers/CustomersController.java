@@ -1,7 +1,7 @@
 package com.loyalty.users.controllers;
 
 import com.loyalty.users.domain.Customer;
-import com.loyalty.users.dto.CustomerDTO;
+import com.loyalty.users.dtos.CustomerDTO;
 import com.loyalty.users.kafka.CustomersProducer;
 import com.loyalty.users.repositories.CustomersRepository;
 import io.micronaut.http.HttpResponse;
@@ -14,28 +14,30 @@ import java.util.Optional;
 public class CustomersController {
 
     @Inject
-    private CustomersRepository customersRepo;
+    private CustomersRepository repo;
 
     @Inject
-    private CustomersProducer customersProducer;
+    private CustomersProducer producer;
 
     @Get
     public Iterable<Customer> getCustomers() {
-        return customersRepo.findAll();
+        return repo.findAll();
     }
 
     @Post
     public HttpResponse<Customer> createCustomer(@Body CustomerDTO details) {
         Customer customer = new Customer();
         customer.setName(details.getName());
-        customersRepo.save(customer);
-        customersProducer.createCustomer(customer.getId(), details);
-        return HttpResponse.ok(customer);
+        customer.setEmail(details.getEmail());
+        customer.setSchemeStatus(details.getSchemeStatus());
+        repo.save(customer);
+        producer.createCustomer(customer.getId(), details);
+        return HttpResponse.created(customer);
     }
 
     @Get("/{id}")
     public HttpResponse<Customer> getCustomer(@PathVariable long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = repo.findById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -44,7 +46,7 @@ public class CustomersController {
 
     @Put("/{id}")
     public HttpResponse<String> updateCustomer(@PathVariable long id, @Body CustomerDTO details) {
-        Optional<Customer> oCustomer = customersRepo.findById(id);
+        Optional<Customer> oCustomer = repo.findById(id);
         if (oCustomer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -52,18 +54,24 @@ public class CustomersController {
         if (details.getName() != null) {
             customer.setName(details.getName());
         }
-        customersRepo.update(customer);
+        if (details.getEmail() != null) {
+            customer.setEmail(details.getEmail());
+        }
+        if (details.getSchemeStatus() != null) {
+            customer.setSchemeStatus(details.getSchemeStatus());
+        }
+        repo.update(customer);
         return HttpResponse.ok();
     }
 
     @Delete("/{id}")
     public HttpResponse<String> deleteCustomer(@PathVariable long id) {
-        Optional<Customer> oCustomer = customersRepo.findById(id);
+        Optional<Customer> oCustomer = repo.findById(id);
         if (oCustomer.isEmpty()) {
             return HttpResponse.notFound("Customer not found");
         }
-        customersRepo.delete(oCustomer.get());
-        customersProducer.deleteCustomer(id, null);
+        repo.delete(oCustomer.get());
+        producer.deleteCustomer(id, null);
         return HttpResponse.ok();
     }
 }

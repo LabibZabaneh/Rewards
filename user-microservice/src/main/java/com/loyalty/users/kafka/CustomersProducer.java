@@ -1,6 +1,6 @@
 package com.loyalty.users.kafka;
 
-import com.loyalty.users.dto.CustomerDTO;
+import com.loyalty.users.dtos.CustomerDTO;
 import io.micronaut.configuration.kafka.annotation.KafkaClient;
 import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.Topic;

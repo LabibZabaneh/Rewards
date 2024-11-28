@@ -1,7 +1,7 @@
 package com.loyalty.users.clients;
 
 import com.loyalty.users.domain.User;
-import com.loyalty.users.dto.UserDTO;
+import com.loyalty.users.dtos.UserDTO;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.client.annotation.Client;

@@ -1,4 +1,4 @@
-package com.loyalty.users.dto;
+package com.loyalty.users.dtos;
 
 import com.loyalty.users.domain.enums.Gender;
 import io.micronaut.serde.annotation.Serdeable;

@@ -15,6 +15,8 @@ public class Customer {
     private long id;
     @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
+    private String email;
     @Enumerated(EnumType.STRING)
     private SchemeStatus schemeStatus;
 
@@ -32,6 +34,14 @@ public class Customer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public SchemeStatus getSchemeStatus() {

@@ -1,6 +1,6 @@
 package com.loyalty.users.kafka;
 
-import com.loyalty.users.dto.UserDTO;
+import com.loyalty.users.dtos.UserDTO;
 import io.micronaut.configuration.kafka.serde.SerdeRegistry;
 import io.micronaut.configuration.kafka.streams.ConfiguredStreamBuilder;
 import io.micronaut.context.annotation.Factory;

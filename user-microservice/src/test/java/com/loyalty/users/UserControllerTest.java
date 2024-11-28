@@ -3,7 +3,7 @@ package com.loyalty.users;
 import com.loyalty.users.clients.UsersClient;
 import com.loyalty.users.domain.User;
 import com.loyalty.users.domain.enums.Gender;
-import com.loyalty.users.dto.UserDTO;
+import com.loyalty.users.dtos.UserDTO;
 import com.loyalty.users.repositories.UsersRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -22,31 +22,31 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserControllerTest {
 
     @Inject
-    private UsersClient usersClient;
+    private UsersClient client;
 
     @Inject
-    UsersRepository usersRepo;
+    private UsersRepository repo;
 
     @BeforeEach
     public void clean() {
-        usersRepo.deleteAll();
+        repo.deleteAll();
     }
 
     @Test
     public void noUsers() {
-        Iterable<User> users = usersClient.getUsers();
-        assertFalse(users.iterator().hasNext(), "Service should not list any users initially");
+        Iterable<User> users = client.getUsers();
+        assertFalse(users.iterator().hasNext(), "Service should not list any users");
     }
 
     @Test
     public void addUser() {
         UserDTO dto = createUserDTO("Joe", "Doe", "joe.doe@example.com","+44 1111111111", LocalDate.of(2003, 5, 10), Gender.MALE);
-        HttpResponse<User> response = usersClient.createUser(dto);
+        HttpResponse<User> response = client.createUser(dto);
         assertEquals(HttpStatus.CREATED, response.getStatus(), "Creation should be successful");
 
         assertTrue(response.getBody().isPresent(), "Response body should have the user");
 
-        List<User> users = iterableToList(usersRepo.findAll());
+        List<User> users = iterableToList(repo.findAll());
         assertEquals(1, users.size(), "There should only be one total user");
 
         User u = users.get(0);
@@ -56,9 +56,9 @@ public class UserControllerTest {
     @Test
     public void getUser() {
         User user = createUser("Smith", "Dan", "smith.dan@example.com", "+44 0000000000", LocalDate.of(2003, 5, 10 ), Gender.MALE);
-        usersRepo.save(user);
+        repo.save(user);
 
-        HttpResponse<User> response = usersClient.getUser(user.getId());
+        HttpResponse<User> response = client.getUser(user.getId());
         assertEquals(HttpStatus.OK, response.getStatus(), "Get should be successful");
 
         assertTrue(response.getBody().isPresent(), "Response body should have the user");
@@ -67,7 +67,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserWithInvalidId() {
-        HttpResponse<User> response = usersClient.getUser(1);
+        HttpResponse<User> response = client.getUser(1);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatus(), "Should return not found");
         assertTrue(response.getBody().isEmpty(), "Response body should be empty");
     }
@@ -75,38 +75,38 @@ public class UserControllerTest {
     @Test
     public void updateUser() {
         User user = createUser("Smith", "Dan", "smith.dan@example.com", "+44 0000000000", LocalDate.of(2003, 5, 10 ), Gender.MALE);
-        usersRepo.save(user);
+        repo.save(user);
 
         UserDTO dto = createUserDTO("Joe", "Doe", "joe.doe@example.com", "+44 1111111111", LocalDate.of(2005, 2, 22 ), Gender.FEMALE);
 
-        HttpResponse<String> resp = usersClient.updateUser(user.getId(), dto);
+        HttpResponse<String> resp = client.updateUser(user.getId(), dto);
         assertEquals(HttpStatus.OK, resp.getStatus(), "Update should be successful");
 
-        User repoUser = usersRepo.findById(user.getId()).get();
+        User repoUser = repo.findById(user.getId()).get();
         compareUsers(repoUser, dto);
     }
 
     @Test
     public void updateUserWithInvalidId() {
         UserDTO dto = createUserDTO("Joe", "Doe", "joe.doe@example.com", "+44 1111111111", LocalDate.of(2005, 2, 22 ), Gender.FEMALE);
-        HttpResponse<String> resp = usersClient.updateUser(1, dto);
+        HttpResponse<String> resp = client.updateUser(1, dto);
         assertEquals(HttpStatus.NOT_FOUND, resp.getStatus(), "Should return not found");
     }
 
     @Test
     public void deleteUser() {
         User user = createUser("Smith", "Dan", "smith.dan@example.com", "+44 0000000000", LocalDate.of(2003, 5, 10 ), Gender.MALE);
-        usersRepo.save(user);
+        repo.save(user);
 
-        HttpResponse<String> resp = usersClient.deleteUser(user.getId());
+        HttpResponse<String> resp = client.deleteUser(user.getId());
         assertEquals(HttpStatus.OK, resp.getStatus(), "Deletion should be successful");
 
-        assertFalse(usersRepo.existsById(user.getId()));
+        assertFalse(repo.existsById(user.getId()));
     }
 
     @Test
     public void deleteUserWithInvalidId() {
-        HttpResponse<String> resp = usersClient.deleteUser(1);
+        HttpResponse<String> resp = client.deleteUser(1);
         assertEquals(HttpStatus.NOT_FOUND, resp.getStatus(), "Should return not found");
     }
 

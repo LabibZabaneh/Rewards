@@ -1,7 +1,7 @@
 package com.loyalty.users.controllers;
 
 import com.loyalty.users.domain.User;
-import com.loyalty.users.dto.UserDTO;
+import com.loyalty.users.dtos.UserDTO;
 import com.loyalty.users.kafka.UsersProducer;
 import com.loyalty.users.repositories.UsersRepository;
 import io.micronaut.http.HttpResponse;
@@ -15,14 +15,14 @@ import java.util.Optional;
 public class UsersController {
 
     @Inject
-    private UsersRepository usersRepo;
+    private UsersRepository repo;
 
     @Inject
-    private UsersProducer usersProducer;
+    private UsersProducer producer;
 
     @Get
     public Iterable<User> getUsers() {
-        return usersRepo.findAll();
+        return repo.findAll();
     }
 
     @Post()
@@ -34,14 +34,14 @@ public class UsersController {
         user.setDateOfBirth(details.getDateOfBirth());
         user.setMobileNumber(details.getMobileNumber());
         user.setGender(details.getGender());
-        usersRepo.save(user);
-        usersProducer.createUser(user.getId(), details);
+        repo.save(user);
+        producer.createUser(user.getId(), details);
         return HttpResponse.created(user);
     }
 
     @Get("/{id}")
     public HttpResponse<User> getUser(@PathVariable long id) {
-        Optional<User> oUser= usersRepo.findById(id);
+        Optional<User> oUser= repo.findById(id);
         if (oUser.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -51,7 +51,7 @@ public class UsersController {
     @Transactional
     @Put("/{id}")
     public HttpResponse<String> updateUser(@PathVariable long id, UserDTO details) {
-        Optional<User> oUser= usersRepo.findById(id);
+        Optional<User> oUser= repo.findById(id);
         if (oUser.isEmpty()) {
            return HttpResponse.notFound("User not found");
         }
@@ -74,19 +74,19 @@ public class UsersController {
         if (details.getGender() != null){
             user.setGender(details.getGender());
         }
-        usersRepo.update(user);
+        repo.update(user);
         return HttpResponse.ok();
     }
 
     @Transactional
     @Delete("/{id}")
     public HttpResponse<String> deleteUser(@PathVariable long id) {
-        Optional<User> oUser= usersRepo.findById(id);
+        Optional<User> oUser= repo.findById(id);
         if (oUser.isEmpty()) {
             return HttpResponse.notFound("User not found");
         }
-        usersRepo.delete(oUser.get());
-        usersProducer.deleteUser(id, null);
+        repo.delete(oUser.get());
+        producer.deleteUser(id, null);
         return HttpResponse.ok();
     }
 }
