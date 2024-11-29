@@ -19,6 +19,8 @@ public class Customer {
     private String email;
     @Enumerated(EnumType.STRING)
     private SchemeStatus schemeStatus;
+    @Column(nullable = false)
+    private String schemeDescription;
 
     public long getId() {
         return id;
@@ -52,4 +54,11 @@ public class Customer {
         this.schemeStatus = schemeStatus;
     }
 
+    public String getSchemeDescription() {
+        return schemeDescription;
+    }
+
+    public void setSchemeDescription(String schemeDescription) {
+        this.schemeDescription = schemeDescription;
+    }
 }
