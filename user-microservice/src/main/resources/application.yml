@@ -3,9 +3,9 @@ micronaut:
     name: userMicroservice
 datasources:
   default:
-    url: jdbc:mariadb://localhost:3306/users
-    username: user
-    password: usersecret
+    url: jdbc:mariadb://${DB_HOST}:3306/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
     db-type: mariadb
     dialect: MYSQL
