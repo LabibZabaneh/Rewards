@@ -5,15 +5,15 @@ import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
 public class CustomerDTO {
-    private SchemeStatus status;
+    private SchemeStatus schemeStatus;
     private String schemeDescription;
 
-    public SchemeStatus getStatus() {
-        return status;
+    public SchemeStatus getSchemeStatus() {
+        return schemeStatus;
     }
 
-    public void setStatus(SchemeStatus status) {
-        this.status = status;
+    public void setSchemeStatus(SchemeStatus schemeStatus) {
+        this.schemeStatus = schemeStatus;
     }
 
     public String getSchemeDescription() {

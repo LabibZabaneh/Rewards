@@ -26,7 +26,7 @@ public class CustomersConsumer {
         if (oCustomer.isEmpty()){
             Customer customer = new Customer();
             customer.setId(id);
-            customer.setSchemeStatus(dto.getStatus());
+            customer.setSchemeStatus(dto.getSchemeStatus());
             customer.setSchemeDescription(dto.getSchemeDescription());
             customer.setLoyaltyCards(new HashSet<>());
             customer.setRewards(new HashSet<>());
