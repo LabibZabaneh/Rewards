@@ -1,5 +1,6 @@
 package com.loyalty.rewards.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.loyalty.rewards.domain.enums.SchemeStatus;
 import io.micronaut.serde.annotation.Serdeable;
 
@@ -13,11 +14,13 @@ public class Customer {
     @Id
     private long id;
     @Enumerated(EnumType.STRING)
-    private SchemeStatus status;
+    private SchemeStatus schemeStatus;
     @Column(nullable = false)
     private String schemeDescription;
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<LoyaltyCard> loyaltyCards;
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<Reward> rewards;
 
@@ -29,12 +32,12 @@ public class Customer {
         this.id = id;
     }
 
-    public SchemeStatus getStatus() {
-        return status;
+    public SchemeStatus getSchemeStatus() {
+        return schemeStatus;
     }
 
-    public void setStatus(SchemeStatus status) {
-        this.status = status;
+    public void setSchemeStatus(SchemeStatus schemeStatus) {
+        this.schemeStatus = schemeStatus;
     }
 
     public String getSchemeDescription() {

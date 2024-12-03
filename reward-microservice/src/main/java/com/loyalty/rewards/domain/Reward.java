@@ -17,13 +17,15 @@ public class Reward {
     private RewardStatus status;
     @Column(nullable = false)
     private String description;
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     @Column(nullable = false)
     private LocalDateTime updatedAt;
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     public long getId() {

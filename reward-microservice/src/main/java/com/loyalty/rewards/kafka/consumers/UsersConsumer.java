@@ -14,8 +14,8 @@ import java.util.Optional;
 @KafkaListener
 public class UsersConsumer {
 
-    final String USER_CREATED_TOPIC = "user-created";
-    final String USER_DELETED_TOPIC = "user-deleted";
+    final static String USER_CREATED_TOPIC = "user-created";
+    final static String USER_DELETED_TOPIC = "user-deleted";
 
     @Inject
     UsersRepository repo;
