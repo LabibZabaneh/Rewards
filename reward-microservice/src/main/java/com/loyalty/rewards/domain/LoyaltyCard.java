@@ -16,8 +16,10 @@ public class LoyaltyCard {
     @Column(nullable = false)
     private int requiredStamps;
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     public long getId() {
