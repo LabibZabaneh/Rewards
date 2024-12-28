@@ -1,5 +1,6 @@
 package com.loyalty.rewards.controllers;
 
+import com.loyalty.rewards.controllers.requests.LoyaltyCardRequests;
 import com.loyalty.rewards.domain.Customer;
 import com.loyalty.rewards.domain.LoyaltyCard;
 import com.loyalty.rewards.domain.Reward;
@@ -15,8 +16,11 @@ import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Controller("/users")
 public class UsersController {
@@ -29,6 +33,9 @@ public class UsersController {
 
     @Inject
     RewardsRepository rewardsRepo;
+
+    @Inject
+    LoyaltyCardsRepository loyaltyCardsRepo;
 
     @Get
     public Iterable<User> getUsers(){
@@ -44,12 +51,6 @@ public class UsersController {
         return HttpResponse.ok(user.get().getLoyaltyCards());
     }
 
-    @Get("/customers")
-    public Iterable<Customer> getCustomers(){
-        return customersRepo.findAll();
-    }
-
-
     @Get("/{id}/rewards")
     public HttpResponse<Set<Reward>> getUserRewards(@PathVariable long id){
         Optional<User> user = repo.findById(id);
@@ -59,25 +60,28 @@ public class UsersController {
         return HttpResponse.ok(user.get().getRewards());
     }
 
-    @Transactional
-    @Post("/{userId}/rewards/{rewardId}/redeem")
-    public HttpResponse<String> redeemReward(@PathVariable long userId, @PathVariable long rewardId){
-        Optional<User> oUser = repo.findById(userId);
+    @Get("/{id}/explore-customers")
+    public HttpResponse<List<Customer>> getUserExploreCustomers(@PathVariable long id){
+        Optional<User> oUser = repo.findById(id);
         if (oUser.isEmpty()){
-            return HttpResponse.notFound("User not found");
+            return HttpResponse.notFound();
         }
-        Optional<Reward> oReward = rewardsRepo.findById(rewardId);
-        if (oReward.isEmpty()){
-            return HttpResponse.notFound("Reward not found");
-        }
-        Reward reward = oReward.get();
-        Customer customer = reward.getCustomer();
-        if (customer.getSchemeStatus() != SchemeStatus.ACTIVE) {
-            return HttpResponse.badRequest("Customer scheme is not active");
-        }
-        if (reward.getStatus() != RewardStatus.AVAILABLE){
-            return HttpResponse.badRequest("Reward is not available");
-        }
-        return HttpResponse.ok();
+        User user = oUser.get();
+
+        // Get Customer Ids that have a loyalty card with the user
+        Set<Long> userCustomerIds = user.getLoyaltyCards().stream()
+                .map(card -> card.getCustomer().getId())
+                .collect(Collectors.toSet());
+
+        // Get all customers and convert Iterable to List directly
+        List<Customer> allCustomers = StreamSupport.stream(customersRepo.findAll().spliterator(), false).toList();
+
+        // Filter customers without loyalty cards tied to the user
+        List<Customer> customersWithoutLoyaltyCards = allCustomers.stream()
+                .filter(customer -> !userCustomerIds.contains(customer.getId()))
+                .toList();
+
+        return HttpResponse.ok(customersWithoutLoyaltyCards);
     }
+
 }
