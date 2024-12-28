@@ -68,28 +68,4 @@ public class LoyaltyCardsController {
         String result = service.addStamp(user, customer, loyaltyCard);
         return HttpResponse.ok(result);
     }
-
-    @Transactional
-    @Post("/{userId}/rewards/{rewardId}/redeem")
-    public HttpResponse<String> redeemReward(@PathVariable long userId, @PathVariable long rewardId){
-        Optional<User> oUser = service.findUserById(userId);
-        if (oUser.isEmpty()){
-            return HttpResponse.notFound("User not found");
-        }
-
-        Optional<Reward> oReward = service.findRewardById(rewardId);
-        if (oReward.isEmpty()){
-            return HttpResponse.notFound("Reward not found");
-        }
-
-        Reward reward = oReward.get();
-        Customer customer = reward.getCustomer();
-
-        if (!service.canRedeemReward(customer, reward)){
-            return HttpResponse.badRequest("Cannot redeem reward");
-        }
-
-        return HttpResponse.ok();
-    }
-
 }

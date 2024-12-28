@@ -1,21 +1,15 @@
 package com.loyalty.rewards.controllers;
 
-import com.loyalty.rewards.controllers.requests.LoyaltyCardRequests;
 import com.loyalty.rewards.domain.Customer;
 import com.loyalty.rewards.domain.LoyaltyCard;
 import com.loyalty.rewards.domain.Reward;
 import com.loyalty.rewards.domain.User;
-import com.loyalty.rewards.domain.enums.RewardStatus;
-import com.loyalty.rewards.domain.enums.SchemeStatus;
 import com.loyalty.rewards.repositories.CustomersRepository;
-import com.loyalty.rewards.repositories.LoyaltyCardsRepository;
-import com.loyalty.rewards.repositories.RewardsRepository;
 import com.loyalty.rewards.repositories.UsersRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,12 +24,6 @@ public class UsersController {
 
     @Inject
     CustomersRepository customersRepo;
-
-    @Inject
-    RewardsRepository rewardsRepo;
-
-    @Inject
-    LoyaltyCardsRepository loyaltyCardsRepo;
 
     @Get
     public Iterable<User> getUsers(){

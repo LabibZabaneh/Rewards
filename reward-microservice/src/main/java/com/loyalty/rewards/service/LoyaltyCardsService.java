@@ -86,6 +86,12 @@ public class LoyaltyCardsService {
                 reward.getStatus() == RewardStatus.AVAILABLE;
     }
 
+    public void redeemReward(Customer customer, Reward reward){
+        reward.setStatus(RewardStatus.REDEEMED);
+        reward.setUpdatedAt(LocalDateTime.now());
+        rewardsRepo.update(reward);
+    }
+
     private void createReward(User user, Customer customer){
         Reward reward = new Reward();
         reward.setStatus(RewardStatus.AVAILABLE);
