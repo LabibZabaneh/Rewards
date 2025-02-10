@@ -12,6 +12,8 @@ public class User {
 
     @Id
     private long id;
+    @Column(unique = true, nullable = false, length = 5)
+    private String stampCode;
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<LoyaltyCard> loyaltyCards;
@@ -25,6 +27,14 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getStampCode() {
+        return stampCode;
+    }
+
+    public void setStampCode(String stampCode) {
+        this.stampCode = stampCode;
     }
 
     public Set<LoyaltyCard> getLoyaltyCards() {

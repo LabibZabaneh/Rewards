@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Random;
 
 @KafkaListener
 public class UsersConsumer {
@@ -28,6 +29,7 @@ public class UsersConsumer {
             user.setId(id);
             user.setRewards(new HashSet<>());
             user.setLoyaltyCards(new HashSet<>());
+            user.setStampCode(generateUniqueUserStampCode());
             repo.save(user);
 
             System.out.println("Created user with id " + id);
@@ -42,5 +44,14 @@ public class UsersConsumer {
 
             System.out.println("Deleted user with id " + id);
         }
+    }
+
+    private String generateUniqueUserStampCode(){
+        Random random = new Random();
+        String code;
+        do {
+            code = String.format("%05d", random.nextInt(100000));
+        } while (repo.existsByStampCode(code));
+        return code;
     }
 }

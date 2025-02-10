@@ -40,27 +40,22 @@ public class LoyaltyCardsController {
     }
 
     @Transactional
-    @Post("/{loyaltyCardId}/add-stamp")
-    public HttpResponse<String> addStamp(@PathVariable long loyaltyCardId, @Body AddStampRequest request) {
-        Optional<User> oUser = service.findUserById(request.userId());
+    @Post("/{customerId}/add-stamp")
+    public HttpResponse<String> addStamp(@PathVariable long customerId, @Body AddStampRequest request) {
+        Optional<User> oUser = service.findUserByStampCode(request.userStampCode());
         if (oUser.isEmpty()) return HttpResponse.notFound("User not found");
 
-        Optional<Customer> oCustomer = service.findCustomerById(request.customerId());
+        Optional<Customer> oCustomer = service.findCustomerById(customerId);
         if (oCustomer.isEmpty()) return HttpResponse.notFound("Customer not found");
 
-        Optional<LoyaltyCard> oLoyaltyCard = service.findLoyaltyCardById(loyaltyCardId);
-        if (oLoyaltyCard.isEmpty()) return HttpResponse.notFound("Loyalty card not found");
-
-        LoyaltyCard loyaltyCard = oLoyaltyCard.get();
         User user = oUser.get();
         Customer customer = oCustomer.get();
 
-        if (request.userId() != loyaltyCard.getUser().getId()){
-            return HttpResponse.badRequest("User id Loyalty card id mismatch");
-        }
-        if (request.customerId() != loyaltyCard.getCustomer().getId()){
-            return HttpResponse.badRequest("Customer id Loyalty card id mismatch");
-        }
+        Optional<LoyaltyCard> oLoyaltyCard = service.findLoyaltyCardByUserAndCustomer(user, customer);
+        if (oLoyaltyCard.isEmpty()) return HttpResponse.notFound("Loyalty card not found");
+
+        LoyaltyCard loyaltyCard = oLoyaltyCard.get();
+
         if (customer.getSchemeStatus() != SchemeStatus.ACTIVE) {
             return HttpResponse.badRequest("Customer scheme is not active");
         }

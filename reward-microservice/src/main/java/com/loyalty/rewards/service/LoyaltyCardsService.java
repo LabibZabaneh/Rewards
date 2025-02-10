@@ -35,6 +35,8 @@ public class LoyaltyCardsService {
         return usersRepo.findById(userId);
     }
 
+    public Optional<User> findUserByStampCode(String stampCode){return usersRepo.findByStampCode(stampCode);}
+
     public Optional<Customer> findCustomerById(long customerId){
         return customersRepo.findById(customerId);
     }
@@ -46,6 +48,8 @@ public class LoyaltyCardsService {
     public Optional<Reward> findRewardById(long rewardId){
         return rewardsRepo.findById(rewardId);
     }
+
+    public Optional<LoyaltyCard> findLoyaltyCardByUserAndCustomer(User user, Customer customer){return loyaltyCardsRepo.findByUserAndCustomer(user, customer);}
 
     public boolean hasLoyaltyCard(User user, Customer customer){
         return user.getLoyaltyCards().stream().anyMatch(
