@@ -1,0 +1,29 @@
+micronaut:
+  application:
+    name: rewardMicroservice
+  server:
+    port: 8081
+datasources:
+  default:
+    driver-class-name: org.mariadb.jdbc.Driver
+    db-type: mariadb
+    dialect: MYSQL
+    url: jdbc:mariadb://${DB_HOST}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+netty:
+  default:
+    allocator:
+      max-order: 3
+jpa:
+  default:
+    entity-scan:
+      packages:
+        - com.loyalty.rewards.domain
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+kafka:
+  bootstrap:
+    servers: ${KAFKA_BOOTSTRAP_SERVERS}

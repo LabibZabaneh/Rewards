@@ -1,26 +1,28 @@
-package com.loyalty.users.domain;
+package com.loyalty.rewards.domain;
 
-import com.loyalty.users.domain.enums.SchemeStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.loyalty.rewards.domain.enums.SchemeStatus;
 import io.micronaut.serde.annotation.Serdeable;
 
 import javax.persistence.*;
-
+import java.util.Set;
 
 @Entity
 @Serdeable
 public class Customer {
 
     @Id
-    @GeneratedValue
     private long id;
-    @Column(nullable = false)
-    private String name;
-    @Column(nullable = false)
-    private String email;
     @Enumerated(EnumType.STRING)
     private SchemeStatus schemeStatus;
     @Column(nullable = false)
     private String schemeDescription;
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private Set<LoyaltyCard> loyaltyCards;
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private Set<Reward> rewards;
 
     public long getId() {
         return id;
@@ -28,22 +30,6 @@ public class Customer {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public SchemeStatus getSchemeStatus() {
@@ -60,5 +46,21 @@ public class Customer {
 
     public void setSchemeDescription(String schemeDescription) {
         this.schemeDescription = schemeDescription;
+    }
+
+    public Set<LoyaltyCard> getLoyaltyCards() {
+        return loyaltyCards;
+    }
+
+    public void setLoyaltyCards(Set<LoyaltyCard> loyaltyCards) {
+        this.loyaltyCards = loyaltyCards;
+    }
+
+    public Set<Reward> getRewards() {
+        return rewards;
+    }
+
+    public void setRewards(Set<Reward> rewards) {
+        this.rewards = rewards;
     }
 }

@@ -1,5 +1,4 @@
 services:
-  # Our database management system
   user-db:
     image: mariadb:11
     restart: unless-stopped
@@ -9,7 +8,18 @@ services:
       MARIADB_ROOT_PASSWORD: iamroot
       MARIADB_DATABASE: &userdbname users
     volumes:
-      - event_mariadb_data:/var/lib/mysql
+      - user_mariadb_data:/var/lib/mysql
+
+  reward-db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: reward
+      MARIADB_PASSWORD: rewardsecret
+      MARIADB_ROOT_PASSWORD: iamroot
+      MARIADB_DATABASE: rewards
+    volumes:
+      - reward_mariadb_data:/var/lib/mysql
 
   users:
     image: user-microservice:latest
@@ -21,7 +31,19 @@ services:
       DB_USER: user
       DB_PASSWORD: usersecret
       DB_NAME: users
-      KAFKA_BOOTSTRAP_SERVERS: kafka0:9092,kafka-1:9092,kafka-2:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka-0:9092,kafka-1:9092,kafka-2:9092
+
+  rewards:
+    image: reward-microservice:latest
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      DB_HOST: reward-db
+      DB_USER: reward
+      DB_PASSWORD: rewardsecret
+      DB_NAME: rewards
+      KAFKA_BOOTSTRAP_SERVERS: kafka-0:9092,kafka-1:9092,kafka-2:9092
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -113,7 +135,8 @@ services:
       - kafka_2_data:/bitnami/kafka
 
 volumes:
-  event_mariadb_data:
+  user_mariadb_data:
+  reward_mariadb_data:
   kafka_0_data:
   kafka_1_data:
   kafka_2_data:

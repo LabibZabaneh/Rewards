@@ -1,31 +1,12 @@
-package com.loyalty.users.dtos;
+package com.loyalty.rewards.dtos;
 
-import com.loyalty.users.domain.enums.SchemeStatus;
+import com.loyalty.rewards.domain.enums.SchemeStatus;
 import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
 public class CustomerDTO {
-
-    private String name;
-    private String email;
     private SchemeStatus schemeStatus;
     private String schemeDescription;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public SchemeStatus getSchemeStatus() {
         return schemeStatus;

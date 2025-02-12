@@ -30,6 +30,7 @@ public class CustomersController {
         customer.setName(details.getName());
         customer.setEmail(details.getEmail());
         customer.setSchemeStatus(details.getSchemeStatus());
+        customer.setSchemeDescription(details.getSchemeDescription());
         repo.save(customer);
         producer.createCustomer(customer.getId(), details);
         return HttpResponse.created(customer);
@@ -59,6 +60,9 @@ public class CustomersController {
         }
         if (details.getSchemeStatus() != null) {
             customer.setSchemeStatus(details.getSchemeStatus());
+        }
+        if (details.getSchemeDescription() != null) {
+            customer.setSchemeDescription(details.getSchemeDescription());
         }
         repo.update(customer);
         return HttpResponse.ok();
