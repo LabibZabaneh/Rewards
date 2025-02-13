@@ -41,10 +41,6 @@ public class LoyaltyCardsService {
         return customersRepo.findById(customerId);
     }
 
-    public Optional<LoyaltyCard> findLoyaltyCardById(long loyaltyCardId){
-        return loyaltyCardsRepo.findById(loyaltyCardId);
-    }
-
     public Optional<Reward> findRewardById(long rewardId){
         return rewardsRepo.findById(rewardId);
     }
@@ -90,7 +86,7 @@ public class LoyaltyCardsService {
                 reward.getStatus() == RewardStatus.AVAILABLE;
     }
 
-    public void redeemReward(Customer customer, Reward reward){
+    public void redeemReward(Reward reward){
         reward.setStatus(RewardStatus.REDEEMED);
         reward.setUpdatedAt(LocalDateTime.now());
         rewardsRepo.update(reward);

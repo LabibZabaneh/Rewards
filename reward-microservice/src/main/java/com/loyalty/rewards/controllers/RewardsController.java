@@ -39,7 +39,7 @@ public class RewardsController {
             return HttpResponse.badRequest("Cannot redeem reward");
         }
 
-        service.redeemReward(customer, reward);
+        service.redeemReward(reward);
         return HttpResponse.ok("Reward redeemed successfully");
     }
 
