@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.loyalty.analytics
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [ app-name, data, data-jpa, gradle, http-client-test, java, java-application, jdbc-hikari, junit, kafka, kafka-streams, logback, mariadb, micronaut-aot, micronaut-build, micronaut-http-validation, netty-server, properties, readme, serialization-jackson, shade, static-resources, test-resources ]
