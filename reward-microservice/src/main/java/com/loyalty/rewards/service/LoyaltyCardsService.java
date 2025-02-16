@@ -6,6 +6,8 @@ import com.loyalty.rewards.domain.Reward;
 import com.loyalty.rewards.domain.User;
 import com.loyalty.rewards.domain.enums.RewardStatus;
 import com.loyalty.rewards.domain.enums.SchemeStatus;
+import com.loyalty.rewards.dtos.RewardDTO;
+import com.loyalty.rewards.kafka.producers.RewardsProducer;
 import com.loyalty.rewards.repositories.CustomersRepository;
 import com.loyalty.rewards.repositories.LoyaltyCardsRepository;
 import com.loyalty.rewards.repositories.RewardsRepository;
@@ -18,6 +20,9 @@ import java.util.Optional;
 
 @Singleton
 public class LoyaltyCardsService {
+
+    @Inject
+    RewardsProducer producer;
 
     @Inject
     UsersRepository usersRepo;
@@ -86,10 +91,15 @@ public class LoyaltyCardsService {
                 reward.getStatus() == RewardStatus.AVAILABLE;
     }
 
-    public void redeemReward(Reward reward){
+    public void redeemReward(Reward reward, long userId, long customerId){
         reward.setStatus(RewardStatus.REDEEMED);
         reward.setUpdatedAt(LocalDateTime.now());
         rewardsRepo.update(reward);
+
+        RewardDTO dto = new RewardDTO();
+        dto.setCustomerId(customerId);
+        dto.setUserId(userId);
+        producer.rewardRedeemed(reward.getId(), dto);
     }
 
     private void createReward(User user, Customer customer){
@@ -106,5 +116,10 @@ public class LoyaltyCardsService {
         customer.getRewards().add(reward);
         usersRepo.update(user);
         customersRepo.update(customer);
+
+        RewardDTO dto = new RewardDTO();
+        dto.setCustomerId(customer.getId());
+        dto.setUserId(user.getId());
+        producer.rewardMinted(reward.getId(), dto);
     }
 }

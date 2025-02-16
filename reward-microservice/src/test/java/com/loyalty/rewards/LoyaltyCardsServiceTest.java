@@ -337,7 +337,7 @@ public class LoyaltyCardsServiceTest {
         Reward reward = createReward(user, customer);
         rewardsRepo.save(reward);
 
-        service.redeemReward(reward);
+        service.redeemReward(reward, user.getId(), customer.getId());
         Reward repoReward = rewardsRepo.findById(reward.getId()).get();
         assertEquals(RewardStatus.REDEEMED, repoReward.getStatus(), "Reward should be REDEEMED");
     }

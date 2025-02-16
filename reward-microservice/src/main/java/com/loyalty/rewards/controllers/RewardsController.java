@@ -3,6 +3,8 @@ package com.loyalty.rewards.controllers;
 import com.loyalty.rewards.domain.Customer;
 import com.loyalty.rewards.domain.Reward;
 import com.loyalty.rewards.domain.User;
+import com.loyalty.rewards.dtos.RewardDTO;
+import com.loyalty.rewards.kafka.producers.RewardsProducer;
 import com.loyalty.rewards.service.LoyaltyCardsService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
@@ -39,7 +41,7 @@ public class RewardsController {
             return HttpResponse.badRequest("Cannot redeem reward");
         }
 
-        service.redeemReward(reward);
+        service.redeemReward(reward, userId, customer.getId());
         return HttpResponse.ok("Reward redeemed successfully");
     }
 

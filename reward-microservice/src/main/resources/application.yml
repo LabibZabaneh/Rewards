@@ -8,9 +8,9 @@ datasources:
     driver-class-name: org.mariadb.jdbc.Driver
     db-type: mariadb
     dialect: MYSQL
-    url: jdbc:mariadb://${DB_HOST}/${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:mariadb://${DB_HOST:'3307'}/${DB_NAME:'rewards'}
+    username: ${DB_USER:'reward'}
+    password: ${DB_PASSWORD:'rewardsecret'}
 netty:
   default:
     allocator:
@@ -26,4 +26,4 @@ jpa:
           auto: update
 kafka:
   bootstrap:
-    servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    servers: ${KAFKA_BOOTSTRAP_SERVERS:`localhost:9094`}
