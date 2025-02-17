@@ -3,7 +3,7 @@ package com.loyalty.analytics.dto;
 import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
-public class RewardDTO {
+public class UserCustomerDTO {
 
     private long userId;
     private long customerId;

@@ -2,7 +2,7 @@ package com.loyalty.analytics.kafka.consumers;
 
 import com.loyalty.analytics.domain.Customer;
 import com.loyalty.analytics.domain.User;
-import com.loyalty.analytics.dto.RewardDTO;
+import com.loyalty.analytics.dto.UserCustomerDTO;
 import com.loyalty.analytics.repositories.CustomersRepository;
 import com.loyalty.analytics.repositories.UsersRepository;
 import io.micronaut.configuration.kafka.annotation.KafkaKey;
@@ -25,7 +25,7 @@ public class RewardsConsumer {
     CustomersRepository customersRepo;
 
     @Topic(REWARD_MINTED_TOPIC)
-    public void rewardMinted(@KafkaKey long key, RewardDTO dto) {
+    public void rewardMinted(@KafkaKey long key, UserCustomerDTO dto) {
         Optional<User> optionalUser = usersRepo.findById(dto.getUserId());
         Optional<Customer> optionalCustomer = customersRepo.findById(dto.getCustomerId());
         if (optionalUser.isPresent() && optionalCustomer.isPresent()) {
@@ -42,7 +42,7 @@ public class RewardsConsumer {
     }
 
     @Topic(REWARD_REDEEMED_TOPIC)
-    public void rewardRedeemed(@KafkaKey long key, RewardDTO dto) {
+    public void rewardRedeemed(@KafkaKey long key, UserCustomerDTO dto) {
         Optional<User> optionalUser = usersRepo.findById(dto.getUserId());
         Optional<Customer> optionalCustomer = customersRepo.findById(dto.getCustomerId());
         if (optionalUser.isPresent() && optionalCustomer.isPresent()) {
