@@ -58,6 +58,18 @@ services:
       DB_NAME: rewards
       KAFKA_BOOTSTRAP_SERVERS: kafka-0:9092,kafka-1:9092,kafka-2:9092
 
+  analytics:
+    image: analytics-microservice:latest
+    restart: unless-stopped
+    ports:
+      - 8082:8082
+    environment:
+      DB_HOST: analytics-db
+      DB_USER: analytics
+      DB_PASSWORD: analyticssecret
+      DB_NAME: analytics
+      KAFKA_BOOTSTRAP_SERVERS: kafka-0:9092,kafka-1:9092,kafka-2:9092
+
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     ports:
