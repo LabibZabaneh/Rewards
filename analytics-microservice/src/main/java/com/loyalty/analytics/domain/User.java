@@ -14,6 +14,8 @@ public class User {
     @Column(nullable = false)
     private int totalStamps;
     @Column
+    private int mintedRewards;
+    @Column
     private int redeemedRewards;
 
     public long getId() {
@@ -30,6 +32,14 @@ public class User {
 
     public void setTotalStamps(int totalStamps) {
         this.totalStamps = totalStamps;
+    }
+
+    public int getMintedRewards() {
+        return mintedRewards;
+    }
+
+    public void setMintedRewards(int mintedRewards) {
+        this.mintedRewards = mintedRewards;
     }
 
     public int getRedeemedRewards() {

@@ -1,5 +1,6 @@
 package com.loyalty.analytics.kafka;
 
+import com.loyalty.analytics.dto.VoidDTO;
 import com.loyalty.analytics.kafka.consumers.UsersConsumer;
 import io.micronaut.configuration.kafka.serde.SerdeRegistry;
 import io.micronaut.configuration.kafka.streams.ConfiguredStreamBuilder;
@@ -20,12 +21,12 @@ public class UserStreams {
     private SerdeRegistry serdeRegistry;
 
     @Singleton
-    public KStream<Long, Void> createdUsers(ConfiguredStreamBuilder builder) {
+    public KStream<Long, VoidDTO> createdUsers(ConfiguredStreamBuilder builder) {
         Properties props = builder.getConfiguration();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "user-created-streams");
         props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
 
-        KStream<Long, Void> createdUsersStream = builder.stream(UsersConsumer.USER_CREATED_TOPIC, Consumed.with(Serdes.Long(), Serdes.Void()));
+        KStream<Long, VoidDTO> createdUsersStream = builder.stream(UsersConsumer.USER_CREATED_TOPIC, Consumed.with(Serdes.Long(), serdeRegistry.getSerde(VoidDTO.class)));
 
         return createdUsersStream;
     }

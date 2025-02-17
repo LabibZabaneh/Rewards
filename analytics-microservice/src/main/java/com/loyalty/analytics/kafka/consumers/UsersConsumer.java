@@ -1,6 +1,7 @@
 package com.loyalty.analytics.kafka.consumers;
 
 import com.loyalty.analytics.domain.User;
+import com.loyalty.analytics.dto.VoidDTO;
 import com.loyalty.analytics.repositories.UsersRepository;
 import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.KafkaListener;
@@ -17,11 +18,12 @@ public class UsersConsumer {
     UsersRepository usersRepo;
 
     @Topic(USER_CREATED_TOPIC)
-    public void createdUser(@KafkaKey long id, Void v){
+    public void createdUser(@KafkaKey long id, VoidDTO v){
         if (!usersRepo.existsById(id)) {
             User user = new User();
             user.setId(id);
             user.setTotalStamps(0);
+            user.setMintedRewards(0);
             user.setRedeemedRewards(0);
             usersRepo.save(user);
 

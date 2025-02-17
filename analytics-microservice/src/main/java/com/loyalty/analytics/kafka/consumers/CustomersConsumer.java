@@ -1,6 +1,7 @@
 package com.loyalty.analytics.kafka.consumers;
 
 import com.loyalty.analytics.domain.Customer;
+import com.loyalty.analytics.dto.VoidDTO;
 import com.loyalty.analytics.repositories.CustomersRepository;
 import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.KafkaListener;
@@ -17,7 +18,7 @@ public class CustomersConsumer {
     CustomersRepository customersRepo;
 
     @Topic(CUSTOMER_CREATED_TOPIC)
-    public void createCustomer(@KafkaKey long id, Void v) {
+    public void createCustomer(@KafkaKey long id, VoidDTO v) {
         if (!customersRepo.existsById(id)) {
             Customer customer = new Customer();
             customer.setId(id);
