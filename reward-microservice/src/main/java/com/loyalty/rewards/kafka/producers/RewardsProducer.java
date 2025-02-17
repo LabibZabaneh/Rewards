@@ -1,6 +1,6 @@
 package com.loyalty.rewards.kafka.producers;
 
-import com.loyalty.rewards.dtos.RewardDTO;
+import com.loyalty.rewards.dtos.UserCustomerDTO;
 import io.micronaut.configuration.kafka.annotation.KafkaClient;
 import io.micronaut.configuration.kafka.annotation.KafkaKey;
 import io.micronaut.configuration.kafka.annotation.Topic;
@@ -12,9 +12,9 @@ public interface RewardsProducer {
     String REWARD_REDEEMED_TOPIC = "reward-redeemed";
 
     @Topic(REWARD_MINTED_TOPIC)
-    void rewardMinted(@KafkaKey long key, RewardDTO dto);
+    void rewardMinted(@KafkaKey long key, UserCustomerDTO dto);
 
     @Topic(REWARD_REDEEMED_TOPIC)
-    void rewardRedeemed(@KafkaKey long key, RewardDTO dto);
+    void rewardRedeemed(@KafkaKey long key, UserCustomerDTO dto);
 
 }

@@ -6,8 +6,9 @@ import com.loyalty.rewards.domain.Reward;
 import com.loyalty.rewards.domain.User;
 import com.loyalty.rewards.domain.enums.RewardStatus;
 import com.loyalty.rewards.domain.enums.SchemeStatus;
-import com.loyalty.rewards.dtos.RewardDTO;
+import com.loyalty.rewards.dtos.UserCustomerDTO;
 import com.loyalty.rewards.kafka.producers.RewardsProducer;
+import com.loyalty.rewards.kafka.producers.StampsProducer;
 import com.loyalty.rewards.repositories.CustomersRepository;
 import com.loyalty.rewards.repositories.LoyaltyCardsRepository;
 import com.loyalty.rewards.repositories.RewardsRepository;
@@ -22,7 +23,10 @@ import java.util.Optional;
 public class LoyaltyCardsService {
 
     @Inject
-    RewardsProducer producer;
+    RewardsProducer rewardsProducer;
+
+    @Inject
+    StampsProducer stampsProducer;
 
     @Inject
     UsersRepository usersRepo;
@@ -82,6 +86,12 @@ public class LoyaltyCardsService {
         } else {
             loyaltyCard.setStamps(currentStamps + 1);
             loyaltyCardsRepo.update(loyaltyCard);
+
+            UserCustomerDTO dto = new UserCustomerDTO();
+            dto.setUserId(user.getId());
+            dto.setCustomerId(customer.getId());
+            stampsProducer.stampAdded(loyaltyCard.getId(), dto);
+
             return "Stamp added successfully";
         }
     }
@@ -96,10 +106,10 @@ public class LoyaltyCardsService {
         reward.setUpdatedAt(LocalDateTime.now());
         rewardsRepo.update(reward);
 
-        RewardDTO dto = new RewardDTO();
+        UserCustomerDTO dto = new UserCustomerDTO();
         dto.setCustomerId(customerId);
         dto.setUserId(userId);
-        producer.rewardRedeemed(reward.getId(), dto);
+        rewardsProducer.rewardRedeemed(reward.getId(), dto);
     }
 
     private void createReward(User user, Customer customer){
@@ -117,9 +127,9 @@ public class LoyaltyCardsService {
         usersRepo.update(user);
         customersRepo.update(customer);
 
-        RewardDTO dto = new RewardDTO();
+        UserCustomerDTO dto = new UserCustomerDTO();
         dto.setCustomerId(customer.getId());
         dto.setUserId(user.getId());
-        producer.rewardMinted(reward.getId(), dto);
+        rewardsProducer.rewardMinted(reward.getId(), dto);
     }
 }

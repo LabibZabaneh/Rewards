@@ -1,8 +1,9 @@
 package com.loyalty.rewards.dtos;
 
-import com.loyalty.rewards.domain.User;
+import io.micronaut.serde.annotation.Serdeable;
 
-public class RewardDTO {
+@Serdeable
+public class UserCustomerDTO {
 
     private long userId;
     private long customerId;
