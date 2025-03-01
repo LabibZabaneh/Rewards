@@ -1,6 +1,7 @@
 package com.loyalty.analytics.kafka.consumers;
 
 import com.loyalty.analytics.domain.Customer;
+import com.loyalty.analytics.domain.DailyStampCount;
 import com.loyalty.analytics.domain.User;
 import com.loyalty.analytics.dto.UserCustomerDTO;
 import com.loyalty.analytics.repositories.CustomersRepository;
@@ -10,7 +11,9 @@ import io.micronaut.configuration.kafka.annotation.KafkaListener;
 import io.micronaut.configuration.kafka.annotation.Topic;
 import jakarta.inject.Inject;
 
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
 @KafkaListener
 public class StampsConsumer {
@@ -34,6 +37,25 @@ public class StampsConsumer {
 
             Customer customer = optionalCustomer.get();
             customer.setTotalStamps(customer.getTotalStamps() + 1);
+
+            LocalDate today = LocalDate.now();
+            Set<DailyStampCount> dailyStampCount = customer.getDailyStampCounts();
+
+            // Get the stamps for today
+            Optional<DailyStampCount> stampsToday = dailyStampCount.stream()
+                    .filter(stamp -> stamp.getDate().equals(today)).findFirst();
+
+            if (stampsToday.isPresent()) {
+                DailyStampCount stampCount = stampsToday.get();
+                stampCount.setStampCount(stampCount.getStampCount() + 1);
+            } else {
+                DailyStampCount stampCount = new DailyStampCount();
+                stampCount.setDate(today);
+                stampCount.setCustomer(customer);
+                stampCount.setStampCount(1);
+                dailyStampCount.add(stampCount);
+            }
+
             customersRepo.update(customer);
 
             System.out.println("Stamp added to loyalty card with id: " + id);

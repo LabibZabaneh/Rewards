@@ -8,6 +8,8 @@ import io.micronaut.configuration.kafka.annotation.KafkaListener;
 import io.micronaut.configuration.kafka.annotation.Topic;
 import jakarta.inject.Inject;
 
+import java.util.HashSet;
+
 @KafkaListener
 public class CustomersConsumer {
 
@@ -26,6 +28,7 @@ public class CustomersConsumer {
             customer.setActiveLoyaltyCards(0);
             customer.setMintedRewards(0);
             customer.setRedeemedRewards(0);
+            customer.setDailyStampCounts(new HashSet<>());
             customersRepo.save(customer);
 
             System.out.println("Customer created with id: " + id);

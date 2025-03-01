@@ -1,9 +1,9 @@
 package com.loyalty.analytics.domain;
 
 import io.micronaut.serde.annotation.Serdeable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 @Serdeable
@@ -19,6 +19,8 @@ public class Customer {
     private int mintedRewards;
     @Column(nullable = false)
     private int redeemedRewards;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private Set<DailyStampCount> dailyStampCounts;
 
     public long getId() {
         return id;
@@ -58,5 +60,13 @@ public class Customer {
 
     public void setRedeemedRewards(int redeemedRewards) {
         this.redeemedRewards = redeemedRewards;
+    }
+
+    public Set<DailyStampCount> getDailyStampCounts() {
+        return dailyStampCounts;
+    }
+
+    public void setDailyStampCounts(Set<DailyStampCount> dailyStampCounts) {
+        this.dailyStampCounts = dailyStampCounts;
     }
 }
