@@ -4,6 +4,7 @@ import com.loyalty.analytics.domain.Customer;
 import com.loyalty.analytics.domain.DailyStampCount;
 import com.loyalty.analytics.dto.DateStampDTO;
 import com.loyalty.analytics.repositories.CustomersRepository;
+import com.loyalty.analytics.service.CustomersService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -22,9 +23,12 @@ public class CustomersStampController {
     @Inject
     CustomersRepository customersRepo;
 
+    @Inject
+    CustomersService service;
+
     @Get("/{id}/stamps/total")
     public HttpResponse<Integer> getTotalStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -33,89 +37,22 @@ public class CustomersStampController {
 
     @Get("/{id}/stamps/today")
     public HttpResponse<Integer> getDailyStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
 
-        LocalDate today = LocalDate.now();
-        Set<DailyStampCount> stampCount = customer.get().getDailyStampCounts();
-
-        int countToday = stampCount.stream()
-                .filter(stamp -> stamp.getDate().equals(today))
-                .mapToInt(DailyStampCount::getStampCount)
-                .findFirst()
-                .orElse(0);
-
-        return HttpResponse.ok(countToday);
+        return HttpResponse.ok(service.getTodayStamps(customer.get()));
     }
 
     @Get("/{id}/stamps/total/weekly")
     public HttpResponse<Integer> getWeeklyStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-
-        int total = customer.get().getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfWeek) && !s.getDate().isAfter(endOfWeek))
-                .mapToInt(DailyStampCount::getStampCount)
-                .sum();
-
-        return HttpResponse.ok(total);
-    }
-
-    @Get("/{id}/stamps/average/weekly")
-    public HttpResponse<Double> getWeeklyAverageStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
-        if (customer.isEmpty()) {
-            return HttpResponse.notFound();
-        }
-
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-
-        double total = customer.get().getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfWeek) && !s.getDate().isAfter(endOfWeek))
-                .mapToDouble(DailyStampCount::getStampCount)
-                .average()
-                .orElse(0.0);
-
-        return HttpResponse.ok(total);
-    }
-
-    @Get("/{id}/stamps/chart/weekly")
-    public HttpResponse<List<DateStampDTO>> getWeeklyChartStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
-        if (customer.isEmpty()) {
-            return HttpResponse.notFound();
-        }
-
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
-
-        Map<LocalDate, Integer> stampCountMap = customer.get().getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfWeek) && !s.getDate().isAfter(endOfWeek))
-                .collect(Collectors.toMap(
-                        DailyStampCount::getDate,
-                        DailyStampCount::getStampCount
-                ));
-
-        List<DateStampDTO> chartData = new ArrayList<>();
-        for (LocalDate date = startOfWeek; !date.isAfter(endOfWeek); date = date.plusDays(1)){
-            int count = stampCountMap.getOrDefault(date, 0);
-            String day = date.getDayOfWeek().toString();
-            chartData.add(new DateStampDTO(date, day, count));
-        }
-
-        return HttpResponse.ok(chartData);
-
+        return HttpResponse.ok(service.getWeeklyStamps(customer.get()));
     }
 
     @Get("/{id}/stamps/total/monthly")
@@ -125,16 +62,17 @@ public class CustomersStampController {
             return HttpResponse.notFound();
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+        return HttpResponse.ok(service.getMonthlyStamps(customer.get()));
+    }
 
-        int total = customer.get().getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfMonth) && !s.getDate().isAfter(endOfMonth))
-                .mapToInt(DailyStampCount::getStampCount)
-                .sum();
+    @Get("/{id}/stamps/average/weekly")
+    public HttpResponse<Double> getWeeklyAverageStamps(@PathVariable Long id) {
+        Optional<Customer> customer = service.findCustomerById(id);
+        if (customer.isEmpty()) {
+            return HttpResponse.notFound();
+        }
 
-        return HttpResponse.ok(total);
+        return HttpResponse.ok(service.getWeeklyAverageStamps(customer.get()));
     }
 
     @Get("/{id}/stamps/average/monthly")
@@ -144,17 +82,28 @@ public class CustomersStampController {
             return HttpResponse.notFound();
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+        return HttpResponse.ok(service.getMonthlyAverageStamps(customer.get()));
+    }
 
-        double total = customer.get().getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfMonth) && !s.getDate().isAfter(endOfMonth))
-                .mapToInt(DailyStampCount::getStampCount)
-                .average()
-                .orElse(0.0);
 
-        return HttpResponse.ok(total);
+    @Get("/{id}/stamps/charts/weekly")
+    public HttpResponse<List<DateStampDTO>> getWeeklyChartStamps(@PathVariable Long id) {
+        Optional<Customer> customer = customersRepo.findById(id);
+        if (customer.isEmpty()) {
+            return HttpResponse.notFound();
+        }
+
+        return HttpResponse.ok(service.getWeeklyChartStamps(customer.get()));
+    }
+
+    @Get("/{id}/stamps/charts/monthly")
+    public HttpResponse<List<DateStampDTO>> getMonthlyChartStamps(@PathVariable Long id) {
+        Optional<Customer> customer = customersRepo.findById(id);
+        if (customer.isEmpty()) {
+            return HttpResponse.notFound();
+        }
+
+        return HttpResponse.ok(service.getMonthlyChartStamps(customer.get()));
     }
 
     @Get("/{id}/stamps/top-day/monthly")
@@ -164,22 +113,15 @@ public class CustomersStampController {
             return HttpResponse.notFound();
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+        DailyStampCount topDay = service.getTopDayMonthlyStamps(customer.get());
 
-        Optional<DailyStampCount> topDay = customer.get().getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfMonth) && !s.getDate().isAfter(endOfMonth))
-                .max(Comparator.comparingInt(DailyStampCount::getStampCount));
-
-        if (topDay.isEmpty()) {
+        if (topDay == null) {
             return HttpResponse.ok(new DateStampDTO(null, null, 0));
         }
 
-        DailyStampCount stamp = topDay.get();
-        String dayName = stamp.getDate().getDayOfWeek().toString();
+        String dayName = topDay.getDate().getDayOfWeek().toString();
 
-        return HttpResponse.ok(new DateStampDTO(stamp.getDate(), dayName, stamp.getStampCount()));
+        return HttpResponse.ok(new DateStampDTO(topDay.getDate(), dayName, topDay.getStampCount()));
     }
 
 }
