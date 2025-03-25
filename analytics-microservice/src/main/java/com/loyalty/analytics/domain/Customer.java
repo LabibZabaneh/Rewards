@@ -1,5 +1,6 @@
 package com.loyalty.analytics.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.serde.annotation.Serdeable;
 import jakarta.persistence.*;
 
@@ -19,6 +20,7 @@ public class Customer {
     private int mintedRewards;
     @Column(nullable = false)
     private int redeemedRewards;
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<DailyStampCount> dailyStampCounts;
 
