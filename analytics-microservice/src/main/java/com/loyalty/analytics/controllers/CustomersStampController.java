@@ -3,7 +3,6 @@ package com.loyalty.analytics.controllers;
 import com.loyalty.analytics.domain.Customer;
 import com.loyalty.analytics.domain.DailyStampCount;
 import com.loyalty.analytics.dto.DateStampDTO;
-import com.loyalty.analytics.repositories.CustomersRepository;
 import com.loyalty.analytics.service.CustomersService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
@@ -11,17 +10,10 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import jakarta.inject.Inject;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller("/customers")
 public class CustomersStampController {
-
-    @Inject
-    CustomersRepository customersRepo;
 
     @Inject
     CustomersService service;
@@ -57,7 +49,7 @@ public class CustomersStampController {
 
     @Get("/{id}/stamps/total/monthly")
     public HttpResponse<Integer> getMonthlyStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -77,7 +69,7 @@ public class CustomersStampController {
 
     @Get("/{id}/stamps/average/monthly")
     public HttpResponse<Double> getMonthlyAverageStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -88,7 +80,7 @@ public class CustomersStampController {
 
     @Get("/{id}/stamps/charts/weekly")
     public HttpResponse<List<DateStampDTO>> getWeeklyChartStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -98,7 +90,7 @@ public class CustomersStampController {
 
     @Get("/{id}/stamps/charts/monthly")
     public HttpResponse<List<DateStampDTO>> getMonthlyChartStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }
@@ -108,7 +100,7 @@ public class CustomersStampController {
 
     @Get("/{id}/stamps/top-day/monthly")
     public HttpResponse<DateStampDTO> getTopDayMonthlyStamps(@PathVariable Long id) {
-        Optional<Customer> customer = customersRepo.findById(id);
+        Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
             return HttpResponse.notFound();
         }

@@ -39,10 +39,7 @@ public class CustomersService {
         LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
 
-        return customer.getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfWeek) && !s.getDate().isAfter(endOfWeek))
-                .mapToInt(DailyStampCount::getStampCount)
-                .sum();
+        return getTotalStamps(customer, startOfWeek, endOfWeek);
     }
 
     public Integer getMonthlyStamps(Customer customer) {
@@ -50,10 +47,7 @@ public class CustomersService {
         LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
-        return customer.getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfMonth) && !s.getDate().isAfter(endOfMonth))
-                .mapToInt(DailyStampCount::getStampCount)
-                .sum();
+        return getTotalStamps(customer, startOfMonth, endOfMonth);
     }
 
     public Double getWeeklyAverageStamps(Customer customer) {
@@ -61,12 +55,7 @@ public class CustomersService {
         LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
 
-        int total = customer.getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfWeek) && !s.getDate().isAfter(endOfWeek))
-                .mapToInt(DailyStampCount::getStampCount)
-                .sum();
-
-        return total / 7.0;
+        return getTotalStamps(customer, startOfWeek, endOfWeek) / 7.0;
     }
 
     public Double getMonthlyAverageStamps(Customer customer) {
@@ -74,12 +63,7 @@ public class CustomersService {
         LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
-        double total = customer.getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfMonth) && !s.getDate().isAfter(endOfMonth))
-                .mapToInt(DailyStampCount::getStampCount)
-                .sum();
-
-        return total / startOfMonth.lengthOfMonth();
+        return (double) (getTotalStamps(customer, startOfMonth, endOfMonth) / startOfMonth.lengthOfMonth());
     }
 
     public List<DateStampDTO> getWeeklyChartStamps(Customer customer) {
@@ -87,21 +71,9 @@ public class CustomersService {
         LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
 
-        Map<LocalDate, Integer> stampCountMap = customer.getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfWeek) && !s.getDate().isAfter(endOfWeek))
-                .collect(Collectors.toMap(
-                        DailyStampCount::getDate,
-                        DailyStampCount::getStampCount
-                ));
+        Map<LocalDate, Integer> stampCountMap = getChartStamps(customer, startOfWeek, endOfWeek);
 
-        List<DateStampDTO> chartData = new ArrayList<>();
-        for (LocalDate date = startOfWeek; !date.isAfter(endOfWeek); date = date.plusDays(1)){
-            int count = stampCountMap.getOrDefault(date, 0);
-            String day = date.getDayOfWeek().toString();
-            chartData.add(new DateStampDTO(date, day, count));
-        }
-
-        return chartData;
+        return sortChartStamps(stampCountMap, startOfWeek, endOfWeek);
     }
 
     public List<DateStampDTO> getMonthlyChartStamps(Customer customer) {
@@ -109,21 +81,9 @@ public class CustomersService {
         LocalDate startOfMonth = today.with(TemporalAdjusters.firstDayOfMonth());
         LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
 
-        Map<LocalDate, Integer> stampCountMap = customer.getDailyStampCounts().stream()
-                .filter(s -> !s.getDate().isBefore(startOfMonth) && !s.getDate().isAfter(endOfMonth))
-                .collect(Collectors.toMap(
-                        DailyStampCount::getDate,
-                        DailyStampCount::getStampCount
-                ));
+        Map<LocalDate, Integer> stampCountMap = getChartStamps(customer, startOfMonth, endOfMonth);
 
-        List<DateStampDTO> chartData = new ArrayList<>();
-        for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date = date.plusDays(1)){
-            int count = stampCountMap.getOrDefault(date, 0);
-            String day = date.getDayOfWeek().toString();
-            chartData.add(new DateStampDTO(date, day, count));
-        }
-
-        return chartData;
+        return sortChartStamps(stampCountMap, startOfMonth, endOfMonth);
     }
 
     public DailyStampCount getTopDayMonthlyStamps(Customer customer) {
@@ -138,6 +98,31 @@ public class CustomersService {
         return topDay.orElse(null);
     }
 
+    private Integer getTotalStamps(Customer customer, LocalDate start, LocalDate end) {
+        return customer.getDailyStampCounts().stream()
+                .filter(s -> !s.getDate().isBefore(start) && !s.getDate().isAfter(end))
+                .mapToInt(DailyStampCount::getStampCount)
+                .sum();
+    }
+
+    private Map<LocalDate, Integer> getChartStamps(Customer customer, LocalDate start, LocalDate end) {
+        return customer.getDailyStampCounts().stream()
+                .filter(s -> !s.getDate().isBefore(start) && !s.getDate().isAfter(end))
+                .collect(Collectors.toMap(
+                        DailyStampCount::getDate,
+                        DailyStampCount::getStampCount
+                ));
+    }
+
+    private List<DateStampDTO> sortChartStamps(Map<LocalDate, Integer> stampCountMap, LocalDate start, LocalDate end) {
+        List<DateStampDTO> chartData = new ArrayList<>();
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)){
+            int count = stampCountMap.getOrDefault(date, 0);
+            String day = date.getDayOfWeek().toString();
+            chartData.add(new DateStampDTO(date, day, count));
+        }
+        return chartData;
+    }
 
 
 
