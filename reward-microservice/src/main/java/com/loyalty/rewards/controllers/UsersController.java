@@ -5,8 +5,10 @@ import com.loyalty.rewards.domain.LoyaltyCard;
 import com.loyalty.rewards.domain.Reward;
 import com.loyalty.rewards.domain.User;
 import com.loyalty.rewards.repositories.CustomersRepository;
+import com.loyalty.rewards.repositories.RewardsRepository;
 import com.loyalty.rewards.repositories.UsersRepository;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
 import jakarta.inject.Inject;
 
@@ -24,6 +26,9 @@ public class UsersController {
 
     @Inject
     CustomersRepository customersRepo;
+
+    @Inject
+    RewardsRepository rewardsRepo;
 
     @Get
     public Iterable<User> getUsers(){
@@ -46,6 +51,24 @@ public class UsersController {
             return HttpResponse.notFound();
         }
         return HttpResponse.ok(user.get().getRewards());
+    }
+
+    @Get("/{id}/rewards/{rewardId}")
+    public HttpResponse<Reward> getUserReward(@PathVariable long id, @PathVariable long rewardId){
+        Optional<User> oUser = repo.findById(id);
+        if (oUser.isEmpty()){
+            return HttpResponse.notFound();
+        }
+        Optional<Reward> oReward = rewardsRepo.findById(rewardId);
+        if (oReward.isEmpty()){
+            return HttpResponse.notFound();
+        }
+        User user = oUser.get();
+        Reward reward = oReward.get();
+        if (!user.getRewards().contains(reward)){
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        }
+        return HttpResponse.ok(reward);
     }
 
     @Get("/{id}/explore-customers")

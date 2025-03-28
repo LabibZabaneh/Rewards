@@ -18,6 +18,7 @@ import jakarta.inject.Singleton;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
 
 @Singleton
 public class LoyaltyCardsService {
@@ -50,8 +51,8 @@ public class LoyaltyCardsService {
         return customersRepo.findById(customerId);
     }
 
-    public Optional<Reward> findRewardById(long rewardId){
-        return rewardsRepo.findById(rewardId);
+    public Optional<Reward> findRewardByRewardCode(String rewardCode){
+        return rewardsRepo.findByRewardCode(rewardCode);
     }
 
     public Optional<LoyaltyCard> findLoyaltyCardByUserAndCustomer(User user, Customer customer){return loyaltyCardsRepo.findByUserAndCustomer(user, customer);}
@@ -115,6 +116,7 @@ public class LoyaltyCardsService {
     private void createReward(User user, Customer customer){
         Reward reward = new Reward();
         reward.setStatus(RewardStatus.AVAILABLE);
+        reward.setRewardCode(generateUniqueRewardCode());
         reward.setDescription("Free Coffee");
         reward.setCreatedAt(LocalDateTime.now());
         reward.setUpdatedAt(LocalDateTime.now());
@@ -131,5 +133,14 @@ public class LoyaltyCardsService {
         dto.setCustomerId(customer.getId());
         dto.setUserId(user.getId());
         rewardsProducer.rewardMinted(reward.getId(), dto);
+    }
+
+    private String generateUniqueRewardCode(){
+        Random random = new Random();
+        String code;
+        do {
+            code = String.format("%05d", random.nextInt(10000));
+        } while (rewardsRepo.existsByRewardCode(code));
+        return code;
     }
 }

@@ -3,8 +3,6 @@ package com.loyalty.rewards.controllers;
 import com.loyalty.rewards.domain.Customer;
 import com.loyalty.rewards.domain.Reward;
 import com.loyalty.rewards.domain.User;
-import com.loyalty.rewards.dtos.RewardDTO;
-import com.loyalty.rewards.kafka.producers.RewardsProducer;
 import com.loyalty.rewards.service.LoyaltyCardsService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
@@ -22,14 +20,14 @@ public class RewardsController {
     LoyaltyCardsService service;
 
     @Transactional
-    @Post("/{rewardId}/redeem/{userId}")
-    public HttpResponse<String> redeemReward(@PathVariable long userId, @PathVariable long rewardId){
+    @Post("/{rewardCode}/redeem/{userId}")
+    public HttpResponse<String> redeemReward(@PathVariable long userId, @PathVariable String rewardCode){
         Optional<User> oUser = service.findUserById(userId);
         if (oUser.isEmpty()){
             return HttpResponse.notFound("User not found");
         }
 
-        Optional<Reward> oReward = service.findRewardById(rewardId);
+        Optional<Reward> oReward = service.findRewardByRewardCode(rewardCode);
         if (oReward.isEmpty()){
             return HttpResponse.notFound("Reward not found");
         }

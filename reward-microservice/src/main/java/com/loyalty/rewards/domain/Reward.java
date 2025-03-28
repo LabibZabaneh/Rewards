@@ -15,6 +15,8 @@ public class Reward {
     private long id;
     @Enumerated(EnumType.STRING)
     private RewardStatus status;
+    @Column(unique = true, nullable = false, length = 5)
+    private String rewardCode;
     @Column(nullable = false)
     private String description;
     @Column(nullable = false, updatable = false)
@@ -42,6 +44,14 @@ public class Reward {
 
     public void setStatus(RewardStatus status) {
         this.status = status;
+    }
+
+    public String getRewardCode() {
+        return rewardCode;
+    }
+
+    public void setRewardCode(String rewardCode) {
+        this.rewardCode = rewardCode;
     }
 
     public String getDescription() {

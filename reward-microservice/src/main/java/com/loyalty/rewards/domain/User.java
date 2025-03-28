@@ -12,7 +12,7 @@ public class User {
 
     @Id
     private long id;
-    @Column(unique = true, nullable = false, length = 5)
+    @Column(unique = true, nullable = false, length = 6)
     private String stampCode;
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
