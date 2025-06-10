@@ -27,7 +27,7 @@ public class CustomersStampController {
         return HttpResponse.ok(customer.get().getTotalStamps());
     }
 
-    @Get("/{id}/stamps/today")
+    @Get("/{id}/stamps/total/today")
     public HttpResponse<Integer> getDailyStamps(@PathVariable Long id) {
         Optional<Customer> customer = service.findCustomerById(id);
         if (customer.isEmpty()) {
@@ -106,11 +106,9 @@ public class CustomersStampController {
         }
 
         DailyStampCount topDay = service.getTopDayMonthlyStamps(customer.get());
-
         if (topDay == null) {
             return HttpResponse.ok(new DateStampDTO(null, null, 0));
         }
-
         String dayName = topDay.getDate().getDayOfWeek().toString();
 
         return HttpResponse.ok(new DateStampDTO(topDay.getDate(), dayName, topDay.getStampCount()));

@@ -1,8 +1,6 @@
 package com.loyalty.analytics.controllers;
 
 import com.loyalty.analytics.domain.Customer;
-import com.loyalty.analytics.domain.DailyStampCount;
-import com.loyalty.analytics.dto.DateStampDTO;
 import com.loyalty.analytics.repositories.CustomersRepository;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
@@ -10,12 +8,7 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import jakarta.inject.Inject;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.Comparator;
 import java.util.Optional;
-import java.util.Set;
 
 @Controller("/customers")
 public class CustomersController {
