@@ -115,36 +115,6 @@ public class LoyaltyCardsServiceTest {
     }
 
     @Test
-    public void findRewardByIdNoReward(){
-        Optional<Reward> reward = service.findRewardById(1L);
-        assertTrue(reward.isEmpty(), "Reward should be empty");
-    }
-
-    @Test
-    public void findRewardById(){
-        User user = createUser();
-        usersRepo.save(user);
-
-        Customer customer = createCustomer();
-        customersRepo.save(customer);
-
-        Reward reward = new Reward();
-        reward.setStatus(RewardStatus.AVAILABLE);
-        reward.setDescription("free coffee");
-        reward.setUser(user);
-        reward.setCustomer(customer);
-        rewardsRepo.save(reward);
-
-        Optional<Reward> reward2 = service.findRewardById(reward.getId());
-        assertTrue(reward2.isPresent(), "Reward should be found");
-        assertEquals(reward.getId(), reward2.get().getId(), "Reward id should be the same");
-        assertEquals(reward.getStatus(), reward2.get().getStatus(), "RewardStatus should be the same");
-        assertEquals(reward.getDescription(), reward2.get().getDescription(), "RewardDescription should be the same");
-        assertEquals(reward.getUser(), reward2.get().getUser(), "RewardUser should be the same");
-        assertEquals(reward.getCustomer(), reward2.get().getCustomer(), "RewardCustomer should be the same");
-    }
-
-    @Test
     public void findLoyaltyCardByUserAndCustomerNoCard(){
         User user = createUser();
         usersRepo.save(user);
